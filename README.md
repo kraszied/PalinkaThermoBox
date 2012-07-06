@@ -1,0 +1,4 @@
+PalinkaThermoBox
+================
+
+PalinkaThermoBox control application
