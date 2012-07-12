@@ -20,8 +20,8 @@ public class BluetoothCommandService {
     private static final boolean D = true;
 
     // Unique UUID for this application
-    private static final UUID MY_UUID = UUID.fromString("C39A253A-F7DF-4552-9B6F-E560287D374B");    		
-    
+    //private static final UUID MY_UUID = UUID.fromString("C39A253A-F7DF-4552-9B6F-E560287D374B");
+    private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     
     // Member fields
     private final BluetoothAdapter mAdapter;

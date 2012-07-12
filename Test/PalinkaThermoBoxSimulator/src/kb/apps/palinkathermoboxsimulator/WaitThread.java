@@ -31,7 +31,8 @@ public class WaitThread implements Runnable {
       local = LocalDevice.getLocalDevice();
       local.setDiscoverable(DiscoveryAgent.GIAC);
 
-      UUID uuid = new UUID("C39A253AF7DF45529B6FE560287D374B", false);
+      //UUID uuid = new UUID("C39A253AF7DF45529B6FE560287D374B", false);
+      UUID uuid = new UUID("0000110100001000800000805F9B34FB", false);
       System.out.println(uuid.toString());
 
       String url = "btspp://localhost:" + uuid.toString()
