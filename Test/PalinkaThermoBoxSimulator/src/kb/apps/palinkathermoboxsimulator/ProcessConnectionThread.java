@@ -3,6 +3,7 @@ package kb.apps.palinkathermoboxsimulator;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.microedition.io.StreamConnection;
 
@@ -62,6 +63,8 @@ public class ProcessConnectionThread implements Runnable {
         System.out.println("Left");
         break;
       }
+      OutputStream output = mConnection.openOutputStream();
+      output.write(1);
     } catch (Exception e) {
       e.printStackTrace();
     }
