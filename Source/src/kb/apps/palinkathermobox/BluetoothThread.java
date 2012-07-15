@@ -103,7 +103,7 @@ public class BluetoothThread extends Thread {
    * @param buffer buffer to write
    * */
   public void write(byte[] buffer) {
-    if (!isAlive()) {
+    if (output != null && isAlive()) {
       try {
         output.write(buffer);
       } catch (IOException e) {
@@ -113,7 +113,7 @@ public class BluetoothThread extends Thread {
   }
   
   public void write(int out) {
-    if (isAlive()) {
+    if (output != null && isAlive()) {
       try {
         output.write(out);
       } catch (IOException e) {
