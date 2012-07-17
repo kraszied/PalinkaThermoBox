@@ -83,16 +83,18 @@ public class BluetoothService implements ServiceEvents {
   @Override
   public void onDataReceived(byte[] data) {    
     StringBuilder cmd = new StringBuilder();
-    StringBuilder value = new StringBuilder();    
+    StringBuilder value = new StringBuilder();   
+    int cmdLength = -1;
 
     for (int i = 0; i < data.length; ++i) {
       command += (char) data[i];
     }
-    if (GetCommand(command, cmd, value)) {
+    cmdLength = GetCommand(command, cmd, value); 
+    if (cmdLength != -1) {
       if (event != null) {
         event.onCommand(cmd.toString(), value.toString());
       }
-      command = "";
+      command = command.replaceAll(command.substring(0, cmdLength), "");
     }
   }
 
@@ -105,24 +107,23 @@ public class BluetoothService implements ServiceEvents {
   
   /**
    * check full command receive do not
-   * returns with true if full command is available otherwise false
+   * returns command length if command is available otherwise -1
    * @param data raw command string
    * @param cmd received command
    * @param value received value 
    * */
-  private boolean GetCommand(String data, StringBuilder cmd, StringBuilder value) {
-    boolean ret;
+  private int GetCommand(String data, StringBuilder cmd, StringBuilder value) {
     int index = data.indexOf("\r\n");
     
-    ret = index != -1;
-    if (ret) {
+    if (index != -1) {
       int cmdEnd = data.lastIndexOf("_");
       if (cmdEnd != -1) {
         cmd.append(data.substring(0, cmdEnd));
         value.append(data.substring((cmdEnd + 1), (data.length() - 1)));
       }
+      index += 2;
     }
-    return ret;
+    return index;
   }
     
 }
