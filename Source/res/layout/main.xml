@@ -3,4 +3,11 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
+    
+    <kb.apps.palinkathermobox.TemperatureControl
+        android:id="@+id/tempControl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+    />
+    
 </LinearLayout>
