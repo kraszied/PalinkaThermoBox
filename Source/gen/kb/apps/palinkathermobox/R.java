@@ -33,6 +33,8 @@ public final class R {
     }
     public static final class string {
         public static final int app_name=0x7f050000;
+        public static final int bt_connection_interrupted=0x7f050009;
+        public static final int bt_device_not_found=0x7f050008;
         public static final int bt_not_enabled=0x7f050004;
         public static final int bt_not_supported=0x7f050006;
         public static final int bt_will_be_disabled=0x7f050005;

@@ -1,0 +1,51 @@
+// Serial communication component
+//
+// (c) PROPIX  Written by Pinter Gabor
+// H-8000 Szekesfehervar, Krivanyi u. 15.
+// Tel: +36 70 3999639
+// Fax: +36 22 304326
+// Email: propix@freemail, Pinter.Gabor@freemail.hu
+// Web: http://www.propix.hu
+//
+// Revisions:
+//  V5.01 2000-11-21  First release (shareware)
+//  V6.0  2003-06-02  Free software, WinXP compatible
+//  V6.1  2004-09-15  Smaller components
+
+
+
+package SerialCom;
+
+{$R *.res}
+{$R 'SerialComUnit.dcr'}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST ON}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DESCRIPTION 'SerialCom package'}
+{$IMPLICITBUILD OFF}
+
+requires
+	vcl;
+
+contains
+	SerialComUnit in 'SerialComUnit.pas';
+
+end.

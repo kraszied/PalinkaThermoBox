@@ -36,9 +36,14 @@ public class BluetoothThread extends Thread {
     this.event = event;
     
     BluetoothSocket tmpSocket = null;
-    try {         
+    try {
+      try {
+        Thread.sleep(5000);  // wait before connect, TODO: think about this waiting, may be it should be deleted
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }    
       tmpSocket = this.device.createRfcommSocketToServiceRecord(uuid);
-      socket = tmpSocket;      
+      socket = tmpSocket;
     } catch (Exception e) {
       onError("device.createRfcommSocketToServiceRecord() failed, e: " + e.getMessage());
     }

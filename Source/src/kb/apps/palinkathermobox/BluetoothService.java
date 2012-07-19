@@ -52,8 +52,8 @@ public class BluetoothService implements ServiceEvents {
   public synchronized void stop() {
     if (service != null) {
       service.cancel();
-      service = null;      
-    }
+      service = null;
+    }    
   }
   
   /**
@@ -73,23 +73,27 @@ public class BluetoothService implements ServiceEvents {
    * @param buffer buffer to write
    * */
   public void write(byte[] buffer) {
-    service.write(buffer);
+    if (service != null) {
+      service.write(buffer);
+    }
   }
   
   public void write(int out) {
-    service.write(out);
+    if (service != null) {
+      service.write(out);
+    }
   }
 
   @Override
   public void onDataReceived(byte[] data) {    
     StringBuilder cmd = new StringBuilder();
     StringBuilder value = new StringBuilder();   
-    int cmdLength = -1;
-
+    int cmdLength = -1;    
+    
     for (int i = 0; i < data.length; ++i) {
       command += (char) data[i];
     }
-    cmdLength = GetCommand(command, cmd, value); 
+    cmdLength = getCommand(command, cmd, value); 
     if (cmdLength != -1) {
       if (event != null) {
         event.onCommand(cmd.toString(), value.toString());
@@ -112,8 +116,10 @@ public class BluetoothService implements ServiceEvents {
    * @param cmd received command
    * @param value received value 
    * */
-  private int GetCommand(String data, StringBuilder cmd, StringBuilder value) {
+  private int getCommand(String data, StringBuilder cmd, StringBuilder value) {
     int index = data.indexOf("\r\n");
+    
+    onErrorMessage(data); // TODO remove debug
     
     if (index != -1) {
       int cmdEnd = data.lastIndexOf("_");

@@ -8,4 +8,6 @@
     <string name="bt_will_be_disabled">Bluetooth will be disabled.</string>
     <string name="bt_not_supported">Bluetooth is not supported.</string>
     <string name="service_stopped">Service stopped.</string>
+    <string name="bt_device_not_found">Remote bluetooth device is not found.</string>
+    <string name="bt_connection_interrupted">Bluetooth connection interrupted.</string>    
 </resources>
