@@ -1,5 +1,6 @@
 package kb.apps.palinkathermobox;
 
+import java.text.DecimalFormat;
 import java.util.UUID;
 
 import kb.apps.palinkathermobox.R;
@@ -25,29 +26,36 @@ import android.content.IntentFilter;
 public class PalinkaThermoBox extends Activity implements ApplicationEvents {
 
   // local bluetooth adapter
-  private BluetoothAdapter adapter = null;      /** bluetooth adapter object */
-  private BluetoothDevice device = null;        /** bluetooth device object (connected to) */
-  private BluetoothService service = null;      /** bluetooth service object */
-  private boolean adapterPrevEnabled = false;   /** contains the previus status of the bluetooth adapter */
-  private boolean waitBeforeConnect = false;    /** application should wait before connect or not */
-  private Intent btAdapterTurnOnIntent = null;  /** save adapter turn on request prevent uninteded calling sub activity */
-  private TextView logTextRight;                /** custom title rigth text object */
-  private TextView logTextLeft;                 /** custom title left text object */
+  private BluetoothAdapter adapter = null;            /** bluetooth adapter object */
+  private BluetoothDevice device = null;              /** bluetooth device object (connected to) */
+  private BluetoothService service = null;            /** bluetooth service object */
+  private boolean adapterPrevEnabled = false;         /** contains the previus status of the bluetooth adapter */
+  private boolean waitBeforeConnect = false;          /** application should wait before connect or not */
+  private Intent btAdapterTurnOnIntent = null;        /** save adapter turn on request prevent uninteded calling sub activity */
+  private TextView logTextRight;                      /** custom title rigth text object */
+  private TextView logTextLeft;                       /** custom title left text object */
+  private TemperatureControl temperature = null;      /** temperature control object */
+  private DecimalFormat formatTemperature;            /** temperature formatting template */         
 
-  private static final int REQUEST_ENABLE_BT = 0;
-  private static final int EXTRA_STATE_DEFAULT_VALUE = -1;
+  private static final int REQUEST_ENABLE_BT = 0;           /** enabling bluetooth adapter command */
+  private static final int EXTRA_STATE_DEFAULT_VALUE = -1;  /** getting adapter state command */
 
   // event messages
-  private static final int COMMAND_RECEIVED_MSG = 0;
-  private static final int ERROR_MSG_RECEIVED_MSG = 1;
-  private static final int BT_SERVICE_STATUS_CHANGED = 2; 
+  private static final int COMMAND_RECEIVED_MSG = 0;        /** command received sync. message */
+  private static final int ERROR_MSG_RECEIVED_MSG = 1;      /** error message received sync. message */
+  private static final int BT_SERVICE_STATUS_CHANGED = 2;   /** service status changed sync. message */
   
   // event message variables
-  private static final String COMMAND_MSG_STRING = "cmnd";
-  private static final String COMMAND_MSG_VALUE_STRING = "value";
-  private static final String ERROR_MSG_STRING = "errorMsg";
-  private static final String BT_MSG_STATUS_STRING = "status";
-
+  private static final String COMMAND_MSG_STRING = "cmnd";        /** command parameter of command received sync. message */
+  private static final String COMMAND_MSG_VALUE_STRING = "value"; /** value parameter of command received sync. message */
+  private static final String ERROR_MSG_STRING = "errorMsg";      /** parameter of error message received sync. message */
+  private static final String BT_MSG_STATUS_STRING = "status";    /** parameter of service status changed sync. message */
+  
+  // device commands
+  private static final String PC_COMMAND_POSTFIX = "\r\n";  /** command postfix characters */
+  private static final String PC_COMMAND_T_IN = "T_IN";     /** inside temperature device command */
+  private static final String PC_COMMAND_T_OUT = "T_OUT";   /** inside temperature device command */
+  
   // palincar device constants
   private static final UUID PALINCAR_SERVICE = UUID
       .fromString("00001101-0000-1000-8000-00805F9B34FB");
@@ -80,7 +88,10 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
     logTextRight.setText(R.string.bt_disconnected);
     logTextLeft = (TextView) findViewById(R.id.titleLeft);
     logTextLeft.setText(R.string.app_name);
-        
+    temperature = (TemperatureControl) findViewById(R.id.tempControl);
+    temperature.setEventHandler(this);
+    
+    formatTemperature = new DecimalFormat("#.##");
   }
 
   @Override
@@ -140,6 +151,7 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
       btAdapterTurnOnIntent = null;
     }
     btAdapterTurnOnIntent = null;
+    formatTemperature = null;
   }
 
   /**
@@ -218,43 +230,6 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
     return super.onKeyDown(keyCode, event);
   }
 
-  /**
-   * create the service object returns true if the creation was successful
-   * otherwise false
-   * */
-  private void createService() {
-    try {
-      device = adapter.getRemoteDevice(PALINCAR_MAC_ADDRESS);
-      service = new BluetoothService(adapter, device, PALINCAR_SERVICE, this);
-    } catch (IllegalArgumentException e) {
-      device = null;
-      service = null;
-      Toast.makeText(this, R.string.bt_device_not_found, Toast.LENGTH_LONG)
-          .show();
-      finish();
-    }
-  }
-
-  private Handler handler = new Handler() {
-    public void handleMessage(Message msg) {
-      switch (msg.what) {
-        case COMMAND_RECEIVED_MSG: {
-          // TODO add command handling
-          break;
-        }
-        case ERROR_MSG_RECEIVED_MSG: {
-          // TODO add error msg handling
-          break;
-        }
-        case BT_SERVICE_STATUS_CHANGED: {
-          int msgId = msg.getData().getInt(BT_MSG_STATUS_STRING);
-          logTextRight.setText(msgId);
-          break;
-        }
-      }  
-    }
-  };
-
   @Override
   public void onCommand(String command, String value) {
     Message msg = handler.obtainMessage(COMMAND_RECEIVED_MSG);
@@ -281,7 +256,65 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
     bundle.putInt(BT_MSG_STATUS_STRING, status);
     msg.setData(bundle);
     handler.sendMessage(msg);
-
   }
 
+  @Override
+  public void onTemperatureChanged(double value) {
+    // TODO Auto-generated method stub
+    String cmd = PC_COMMAND_T_OUT + "_" + formatTemperature.format(value) + PC_COMMAND_POSTFIX;
+    if (service != null) {
+      service.write(cmd.getBytes());      
+    }
+  }
+  
+  /**
+   * create the service object returns true if the creation was successful
+   * otherwise false
+   * */
+  private void createService() {
+    try {
+      device = adapter.getRemoteDevice(PALINCAR_MAC_ADDRESS);
+      service = new BluetoothService(adapter, device, PALINCAR_SERVICE, this);
+    } catch (IllegalArgumentException e) {
+      device = null;
+      service = null;
+      Toast.makeText(this, R.string.bt_device_not_found, Toast.LENGTH_LONG)
+          .show();
+      finish();
+    }
+  }
+
+  private Handler handler = new Handler() {
+    public void handleMessage(Message msg) {
+      switch (msg.what) {
+        case COMMAND_RECEIVED_MSG: {
+          // TODO add command handling
+          commandProcessor(msg.getData().getString(COMMAND_MSG_STRING), 
+              msg.getData().getString(COMMAND_MSG_VALUE_STRING));
+          break;
+        }
+        case ERROR_MSG_RECEIVED_MSG: {
+          // TODO add error msg handling
+          break;
+        }
+        case BT_SERVICE_STATUS_CHANGED: {
+          int msgId = msg.getData().getInt(BT_MSG_STATUS_STRING);
+          logTextRight.setText(msgId);
+          break;
+        }
+      }  
+    }
+  };
+  
+  /**
+   * processes the incoming commands
+   * @param cmd command
+   * @param value command value
+   * */
+  private void commandProcessor(String cmd, String value) {
+    // inside temperature
+    if (cmd.equals(PC_COMMAND_T_IN)) {
+      temperature.setCurrentTemperature(Double.valueOf(value));
+    }
+  }
 }

@@ -72,7 +72,7 @@ public class BluetoothService implements ServiceEvents {
    * writes buffer to output stream
    * @param buffer buffer to write
    * */
-  public void write(byte[] buffer) {
+  public synchronized void write(byte[] buffer) {
     if (thread != null) {
       thread.write(buffer);
     }
@@ -82,7 +82,7 @@ public class BluetoothService implements ServiceEvents {
    * writes integer value to output stream
    * @param out integer value
    * */
-  public void write(int out) {
+  public synchronized void write(int out) {
     if (thread != null) {
       thread.write(out);
     }
@@ -138,6 +138,7 @@ public class BluetoothService implements ServiceEvents {
   
   /**
    * set actual status
+   * @param status new status
    * */
   private void setStatus(int status) {
     if (event != null) {

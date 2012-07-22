@@ -3,10 +3,10 @@ package kb.apps.palinkathermobox;
 import java.text.DecimalFormat;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
-import android.graphics.drawable.shapes.ArcShape;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,7 +19,10 @@ public class TemperatureControl extends View {
 	public final static int MAXIMUM_TEMPERATURE = 24; //TODO : Confirm values
 	public final static double PERCENTAGE_TO_ANGLE =  1.8;
 	
-	private Paint paint;
+  private static final String SAVED_PERCENTAGE_KEY = "PathPercentage";  /** stored temperature key */
+  private static final String PREFERNCE_NAME = "PALINCAR_REFERENCE";    /** prefernece name */
+
+  private Paint paint;
 	private int pathPercentage; 
 	private double blackControlDegrees;
 	
@@ -27,17 +30,32 @@ public class TemperatureControl extends View {
 	private float meterYPosition;
 	private boolean isMeterPressed;
 	private DecimalFormat format;
+	private ApplicationEvents event;
+	private Context context;
 	
+  private volatile double temperatureLevel;
 	
-	public TemperatureControl(Context context,AttributeSet atSet)
+	public TemperatureControl(Context context, AttributeSet atSet)
 	{
 		super(context,atSet);
 		paint = new Paint();
-		pathPercentage = 75; // TODO : Fetch from a saved value
+		pathPercentage = 75;
 		meterXPosition = 0;
 		meterYPosition = 0;
 		isMeterPressed = false;
 		format = new DecimalFormat("#.## °C");
+		
+    // load the stored temperature data
+		this.context = context;
+		loadPreferences(this.context);
+	}
+	
+	//public void onDestroy() {
+	  //savePrefrences(context);
+	//}
+	
+	public void setEventHandler(ApplicationEvents event) {
+	  this.event = event;
 	}
 	
 	public void onDraw(Canvas canvas)
@@ -86,7 +104,7 @@ public class TemperatureControl extends View {
 		
 		//Text-Drawing here
 		paint.setARGB(255, 40, 40, 40);
-		canvas.drawText(format.format(this.getTemperatureLevel()), this.getWidth()/2, this.getHeight()/2, paint);
+		canvas.drawText(format.format(temperatureLevel), this.getWidth()/2, this.getHeight()/2, paint);		
 		
 		//Meter values drawing
 		paint.setARGB(255, 240, 230, 20);
@@ -137,7 +155,10 @@ public class TemperatureControl extends View {
 			isMeterPressed = false;
 			invalidate();
 			//Here, call the BT service and send the new temperature!!
-			System.out.println("Sent message to device using BT, temperature sent : " + this.getTemperatureLevel());
+			if (this.event != null) {			  
+			  this.event.onTemperatureChanged(this.getTemperatureLevel());
+			  savePrefrences(context);
+			}
 			return true;
 		}
 		
@@ -150,9 +171,21 @@ public class TemperatureControl extends View {
 		
 	}
 	
-	public void setCurrentTemperature()
+	public void setCurrentTemperature(double temperature)
 	{
-		//TODO : Get current temperature level from bluetooth
+	  temperatureLevel = temperature;
+	  invalidate();
 	}
 	
+	private void loadPreferences(Context context) {
+	   SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERNCE_NAME, Context.MODE_PRIVATE);
+	   pathPercentage = Integer.valueOf(sharedPreferences.getInt(SAVED_PERCENTAGE_KEY, 75));	    
+	}
+	
+	private void savePrefrences(Context context) {
+    SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERNCE_NAME, Context.MODE_PRIVATE);
+    SharedPreferences.Editor editor = sharedPreferences.edit();
+    editor.putInt(SAVED_PERCENTAGE_KEY, pathPercentage);
+    editor.commit();
+	}
 }

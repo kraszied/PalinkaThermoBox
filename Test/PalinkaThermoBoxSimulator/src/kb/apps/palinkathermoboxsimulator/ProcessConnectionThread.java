@@ -12,6 +12,7 @@ public class ProcessConnectionThread implements Runnable {
 
   private StreamConnection mConnection;  
   private OutputStream output;
+  private double value = 10.0;
 
   // Constant that indicate command from devices
   private static final int EXIT_CMD = -1;
@@ -46,7 +47,8 @@ public class ProcessConnectionThread implements Runnable {
         int bytes = inputStream.read(buffer);
         if (bytes > 0) {
           System.out.println(Arrays.toString(buffer));        
-          String answer = "T_IN_20\r\n";
+          String answer = "T_IN_" + String.valueOf(value) + "\r\n";
+          value += 0.5;
           output.write(answer.getBytes());
         }
       }
