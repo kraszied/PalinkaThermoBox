@@ -20,30 +20,35 @@ public final class R {
         public static final int ic_launcher=0x7f020001;
     }
     public static final class id {
-        public static final int command=0x7f080000;
-        public static final int log=0x7f080002;
-        public static final int menu_settings=0x7f080003;
-        public static final int sendCommand=0x7f080001;
+        public static final int RelativeLayout01=0x7f080000;
+        public static final int tempControl=0x7f080003;
+        public static final int titleLeft=0x7f080001;
+        public static final int titleRight=0x7f080002;
     }
     public static final class layout {
-        public static final int main=0x7f030000;
+        public static final int custom_title=0x7f030000;
+        public static final int main=0x7f030001;
     }
     public static final class menu {
         public static final int main=0x7f070000;
     }
     public static final class string {
         public static final int app_name=0x7f050000;
-        public static final int bt_connection_interrupted=0x7f050009;
-        public static final int bt_device_not_found=0x7f050008;
-        public static final int bt_not_enabled=0x7f050004;
-        public static final int bt_not_supported=0x7f050006;
-        public static final int bt_will_be_disabled=0x7f050005;
+        public static final int bt_connected=0x7f050009;
+        public static final int bt_connecting=0x7f05000b;
+        public static final int bt_connection_interrupted=0x7f050008;
+        public static final int bt_device_not_found=0x7f050007;
+        public static final int bt_disconnected=0x7f05000a;
+        public static final int bt_not_enabled=0x7f050003;
+        public static final int bt_not_supported=0x7f050005;
+        public static final int bt_will_be_disabled=0x7f050004;
         public static final int hello_world=0x7f050001;
-        public static final int menu_settings=0x7f050002;
-        public static final int service_stopped=0x7f050007;
-        public static final int title_activity_main=0x7f050003;
+        public static final int service_stopped=0x7f050006;
+        public static final int title_activity_main=0x7f050002;
     }
     public static final class style {
-        public static final int AppTheme=0x7f060000;
+        public static final int AppTheme=0x7f060002;
+        public static final int CustomTheme=0x7f060001;
+        public static final int CustomWindowTitleBackground=0x7f060000;
     }
 }

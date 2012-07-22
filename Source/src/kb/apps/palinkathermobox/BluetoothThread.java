@@ -30,15 +30,18 @@ public class BluetoothThread extends Thread {
    * @param uuid service id
    * @param event event handler object
    * */
-  public BluetoothThread(BluetoothAdapter adapter, BluetoothDevice device, UUID uuid, ServiceEvents event) {
+  public BluetoothThread(BluetoothAdapter adapter, BluetoothDevice device, UUID uuid, ServiceEvents event, boolean wait) {
     this.adapter = adapter;
     this.device = device;
     this.event = event;
     
     BluetoothSocket tmpSocket = null;
     try {
+      setStatus(R.string.bt_connecting);
       try {
-        Thread.sleep(5000);  // wait before connect, TODO: think about this waiting, may be it should be deleted
+        if (wait) {
+          Thread.sleep(5000);  // wait before connect, TODO: think about this waiting, may be it should be deleted
+        }
       } catch (InterruptedException e) {
         e.printStackTrace();
       }    
@@ -71,7 +74,9 @@ public class BluetoothThread extends Thread {
       }
       return;
     }     
-
+    
+    setStatus(R.string.bt_connected);
+    
     byte[] buffer = new byte[1024];
     int bytes = 0;
 
@@ -88,6 +93,7 @@ public class BluetoothThread extends Thread {
         }
       } catch (IOException e) {
         onError("socket.close() failed during socket reading failure, e: " + e.getMessage());
+        setStatus(R.string.bt_disconnected);
         break;
       }    
     }
@@ -134,5 +140,14 @@ public class BluetoothThread extends Thread {
    * */
   private void onError(String errorMsg) {
     event.onErrorMessage(TAG + ": " + errorMsg);
+  }
+
+  /**
+   * set actual status
+   * */
+  private void setStatus(int status) {
+    if (event != null) {
+      event.onStatusChanged(status);
+    }
   }
 }

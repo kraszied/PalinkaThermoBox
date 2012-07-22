@@ -14,11 +14,11 @@ public class BluetoothService implements ServiceEvents {
 
   private BluetoothAdapter adapter;       /** bluetooth adapter object */
   private BluetoothDevice device;         /** bluetooth device object (connected to) */
-  private BluetoothThread service;        /** bluetooth service thread object */
+  private BluetoothThread thread;         /** bluetooth service thread object */
   private final ApplicationEvents event;  /** event handler object */
   private UUID uuid;                      /** service id */
   private String command;                 /** received command */
-  
+    
   /**
    * constructor
    * @param adapter the bluetooth adapter in the used device
@@ -37,23 +37,23 @@ public class BluetoothService implements ServiceEvents {
   /**
    * starts the service
    * */
-  public synchronized void start() {
-    if (service != null) {
-      service.cancel();
-      service = null;      
+  public synchronized void start(boolean wait) {
+    if (thread != null) {
+      thread.cancel();
+      thread = null;      
     }
-    service = new BluetoothThread(adapter, device, uuid, this);
-    service.start();
+    thread = new BluetoothThread(adapter, device, uuid, this, wait);
+    thread.start();
   }
   
   /**
    * stops the service
    * */
   public synchronized void stop() {
-    if (service != null) {
-      service.cancel();
-      service = null;
-    }    
+    if (thread != null) {
+      thread.cancel();
+      thread = null;
+    }
   }
   
   /**
@@ -62,8 +62,8 @@ public class BluetoothService implements ServiceEvents {
   public synchronized boolean isRunning() {
     boolean ret = false;
     
-    if (service != null) {
-      ret = service.isAlive();
+    if (thread != null) {
+      ret = thread.isAlive();
     }
     return ret;
   }
@@ -73,14 +73,18 @@ public class BluetoothService implements ServiceEvents {
    * @param buffer buffer to write
    * */
   public void write(byte[] buffer) {
-    if (service != null) {
-      service.write(buffer);
+    if (thread != null) {
+      thread.write(buffer);
     }
   }
   
+  /**
+   * writes integer value to output stream
+   * @param out integer value
+   * */
   public void write(int out) {
-    if (service != null) {
-      service.write(out);
+    if (thread != null) {
+      thread.write(out);
     }
   }
 
@@ -130,6 +134,20 @@ public class BluetoothService implements ServiceEvents {
       index += 2;
     }
     return index;
+  }
+  
+  /**
+   * set actual status
+   * */
+  private void setStatus(int status) {
+    if (event != null) {
+      event.onStatusChanged(status);
+    }
+  }
+
+  @Override
+  public void onStatusChanged(int status) {
+    setStatus(status);
   }
     
 }
