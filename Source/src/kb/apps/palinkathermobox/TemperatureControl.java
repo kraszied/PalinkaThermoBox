@@ -1,9 +1,12 @@
 package kb.apps.palinkathermobox;
 
+import java.text.DecimalFormat;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
+import android.graphics.drawable.shapes.ArcShape;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,16 +26,18 @@ public class TemperatureControl extends View {
 	private float meterXPosition;
 	private float meterYPosition;
 	private boolean isMeterPressed;
+	private DecimalFormat format;
 	
 	
 	public TemperatureControl(Context context,AttributeSet atSet)
 	{
 		super(context,atSet);
 		paint = new Paint();
-		pathPercentage = 18; // TODO : Fetch from a saved value
+		pathPercentage = 75; // TODO : Fetch from a saved value
 		meterXPosition = 0;
 		meterYPosition = 0;
 		isMeterPressed = false;
+		format = new DecimalFormat("#.## °C");
 	}
 	
 	public void onDraw(Canvas canvas)
@@ -81,14 +86,14 @@ public class TemperatureControl extends View {
 		
 		//Text-Drawing here
 		paint.setARGB(255, 40, 40, 40);
-		String currenttemp = String.valueOf(pathPercentage) + "°C"; //TODO : Remove after refresh
-		canvas.drawText(currenttemp, this.getWidth()/2, this.getHeight()/2, paint);
+		canvas.drawText(format.format(this.getTemperatureLevel()), this.getWidth()/2, this.getHeight()/2, paint);
 		
 		//Meter values drawing
 		paint.setARGB(255, 240, 230, 20);
 		paint.setTextSize(18);
 		int meterTemperature = MINIMUM_TEMPERATURE;
 		float textDegrees = 0;
+		String currenttemp;
 		while(meterTemperature <= MAXIMUM_TEMPERATURE)
 		{
 			currenttemp = String.valueOf(meterTemperature);
@@ -121,16 +126,28 @@ public class TemperatureControl extends View {
 		}
 		else if(event.getAction() == MotionEvent.ACTION_MOVE)
 		{
-			
+			double angleDegrees = Math.atan2(event.getY() - this.getHeight()/2, event.getX() - this.getWidth()/2 );
+			angleDegrees = Math.abs(angleDegrees) * 180/Math.PI;
+			pathPercentage = (int) (angleDegrees * (1/PERCENTAGE_TO_ANGLE));
+			invalidate();
+			return true;
 		}
 		else if(event.getAction() == MotionEvent.ACTION_UP)
 		{
 			isMeterPressed = false;
 			invalidate();
+			//Here, call the BT service and send the new temperature!!
+			System.out.println("Sent message to device using BT, temperature sent : " + this.getTemperatureLevel());
 			return true;
 		}
 		
 		return super.onTouchEvent(event);
+	}
+	public double getTemperatureLevel()
+	{
+		int range = MAXIMUM_TEMPERATURE - MINIMUM_TEMPERATURE;
+		return (MINIMUM_TEMPERATURE + range * ( (double)pathPercentage/100 )); 
+		
 	}
 	
 	public void setCurrentTemperature()
