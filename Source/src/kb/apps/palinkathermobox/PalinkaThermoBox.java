@@ -1,6 +1,5 @@
 package kb.apps.palinkathermobox;
 
-import java.text.DecimalFormat;
 import java.util.UUID;
 
 import kb.apps.palinkathermobox.R;
@@ -35,7 +34,6 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
   private TextView logTextRight;                      /** custom title rigth text object */
   private TextView logTextLeft;                       /** custom title left text object */
   private TemperatureControl temperature = null;      /** temperature control object */
-  private DecimalFormat formatTemperature;            /** temperature formatting template */         
 
   private static final int REQUEST_ENABLE_BT = 0;           /** enabling bluetooth adapter command */
   private static final int EXTRA_STATE_DEFAULT_VALUE = -1;  /** getting adapter state command */
@@ -53,15 +51,31 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
   
   // device commands
   private static final String PC_COMMAND_POSTFIX = "\r\n";  /** command postfix characters */
-  private static final String PC_COMMAND_T_IN = "T_IN";     /** inside temperature device command */
-  private static final String PC_COMMAND_T_OUT = "T_OUT";   /** inside temperature device command */
+  // incoming commands
+  private static final String PC_IN_COMMAND_T_IN = "T_IN";  /** inside temperature device command */
+  private static final String PC_IN_COMMAND_M = "M";        /** message command */
+  private static final String PC_IN_COMMAND_P = "P";        /** peltier power */
+  // outgoing commands
+  private static final String PC_OUT_COMMAND_T = "T_";      /** inside temperature device command */
+  private static final String PC_OUT_COMMAND_L = "L_";      /** brithness of backlight LEDs */
+  private static final String PC_OUT_COMMAND_P = "P_";      /** peltier power */
+  
+  // device constants
+  private static final int PELTIER_POWER = 45;          /** peltier power in % (0-100) */ 
+  private static final int BRITHNESS_OF_BACKLIGHT = 0; /** brithness level of backlight in % (0-100) */
+  
+  // TODO remove debug shadow variables
+  private static int peltierPower = PELTIER_POWER;
+  private static int brithness = BRITHNESS_OF_BACKLIGHT;
+  
   
   // palincar device constants
   private static final UUID PALINCAR_SERVICE = UUID
       .fromString("00001101-0000-1000-8000-00805F9B34FB");
-  private static final String PALINCAR_MAC_ADDRESS = "00:1F:E1:F2:95:1F";
+  //private static final String PALINCAR_MAC_ADDRESS = "00:1F:E1:F2:95:1F";
 
   //private static final String PALINCAR_MAC_ADDRESS = "00:07:80:9D:36:46";
+  private static final String PALINCAR_MAC_ADDRESS = "00:07:80:56:8A:33";
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -90,8 +104,6 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
     logTextLeft.setText(R.string.app_name);
     temperature = (TemperatureControl) findViewById(R.id.tempControl);
     temperature.setEventHandler(this);
-    
-    formatTemperature = new DecimalFormat("#.##");
   }
 
   @Override
@@ -148,10 +160,8 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
       Toast.makeText(this, R.string.bt_will_be_disabled, Toast.LENGTH_LONG)
           .show();
       adapter.disable();
-      btAdapterTurnOnIntent = null;
     }
     btAdapterTurnOnIntent = null;
-    formatTemperature = null;
   }
 
   /**
@@ -218,13 +228,39 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
   public boolean onKeyDown(int keyCode, KeyEvent event) {
     if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
       if (service != null) {
-        service.write(1);
+        //if (brithness <= 10 || brithness >= 100) {
+          //brithness += 1;
+        //} else {
+          //brithness += 5;
+        //}
+        //if (brithness > 109) {
+          //brithness = 0;
+        //}
+        //String cmd = PC_OUT_COMMAND_L + String.valueOf(brithness) + PC_COMMAND_POSTFIX;
+        brithness += 5;
+        if (brithness > 100) {
+          brithness = 0;
+        }
+        String cmd = PC_OUT_COMMAND_P + String.valueOf(brithness) + PC_COMMAND_POSTFIX;
+        service.write(cmd.getBytes());        
       }
       return true;
     } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-      if (service != null) {
-        service.write(2);
+      //if (brithness <= 10 || brithness >= 100) {
+        //brithness -= 1;
+      //} else {
+        //brithness -= 5;
+      //}
+      //if (brithness < 0) {
+        //brithness = 109;
+      //}
+      //String cmd = PC_OUT_COMMAND_L + String.valueOf(brithness) + PC_COMMAND_POSTFIX;
+      brithness -= 5;
+      if (brithness < 0) {
+        brithness = 100;
       }
+      String cmd = PC_OUT_COMMAND_P + String.valueOf(brithness) + PC_COMMAND_POSTFIX;
+      service.write(cmd.getBytes());        
       return true;
     }
     return super.onKeyDown(keyCode, event);
@@ -260,8 +296,7 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
 
   @Override
   public void onTemperatureChanged(double value) {
-    // TODO Auto-generated method stub
-    String cmd = PC_COMMAND_T_OUT + "_" + formatTemperature.format(value) + PC_COMMAND_POSTFIX;
+    String cmd = PC_OUT_COMMAND_T + String.format("%d", (int)(value * 10)) + PC_COMMAND_POSTFIX;
     if (service != null) {
       service.write(cmd.getBytes());      
     }
@@ -284,6 +319,9 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
     }
   }
 
+  /**
+   * activity message handling
+   * */
   private Handler handler = new Handler() {
     public void handleMessage(Message msg) {
       switch (msg.what) {
@@ -313,8 +351,16 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
    * */
   private void commandProcessor(String cmd, String value) {
     // inside temperature
-    if (cmd.equals(PC_COMMAND_T_IN)) {
+    if (cmd.equals(PC_IN_COMMAND_T_IN)) {
       temperature.setCurrentTemperature(Double.valueOf(value));
+    }
+    // message
+    if (cmd.equals(PC_IN_COMMAND_M)) {
+      logTextLeft.setText(value);
+    }
+    // peltier power
+    if (cmd.equals(PC_IN_COMMAND_P)) {
+      logTextLeft.setText(value);
     }
   }
 }
