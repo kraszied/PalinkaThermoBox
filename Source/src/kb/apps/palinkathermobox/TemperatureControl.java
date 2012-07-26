@@ -14,6 +14,7 @@ import android.view.View;
 public class TemperatureControl extends View {
 
 	public final static int METER_RADIUS = 15; 
+	public final static int METER_SLACK = 10;
 	
 	public final static int MINIMUM_TEMPERATURE = 8;
 	public final static int MAXIMUM_TEMPERATURE = 24; //TODO : Confirm values
@@ -134,7 +135,7 @@ public class TemperatureControl extends View {
 		if(event.getAction() == MotionEvent.ACTION_DOWN)
 		{		
 			double hitRadius = Math.sqrt( Math.pow( (event.getX() - meterXPosition), 2) + Math.pow( (event.getY() - meterYPosition), 2) );
-			if(hitRadius < METER_RADIUS)
+			if(hitRadius < METER_RADIUS + METER_SLACK)
 			{
 				isMeterPressed = true;
 				invalidate();
