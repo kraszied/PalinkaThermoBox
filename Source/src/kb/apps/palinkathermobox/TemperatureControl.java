@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
-import android.graphics.drawable.shapes.ArcShape;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,8 +18,8 @@ public class TemperatureControl extends View {
 	public final static int MAXIMUM_TEMPERATURE = 24; //TODO : Confirm values
 	public final static double PERCENTAGE_TO_ANGLE =  1.8;
 	
-  private static final String SAVED_PERCENTAGE_KEY = "PathPercentage";  /** stored temperature key */
-  private static final String PREFERNCE_NAME = "PALINCAR_REFERENCE";    /** prefernece name */
+	public static final String PREFERENCE_NAME = "PALINCAR_REFERENCE";    /** prefernece name */
+	private static final String SAVED_PERCENTAGE_KEY = "PathPercentage";  /** stored temperature key */
   
   private static final double NO_INPUT_TEMP = -99;                /** there is no input temperature */
   private static final String NO_INPUT_TEMP_STRING = "-.-- °C";   /** until the device is not connected this value is shown */
@@ -183,12 +182,12 @@ public class TemperatureControl extends View {
 	}
 	
 	private void loadPreferences(Context context) {
-	   SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERNCE_NAME, Context.MODE_PRIVATE);
+	   SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
 	   pathPercentage = Integer.valueOf(sharedPreferences.getInt(SAVED_PERCENTAGE_KEY, 75));	    
 	}
 	
 	private void savePrefrences(Context context) {
-    SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERNCE_NAME, Context.MODE_PRIVATE);
+    SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
     SharedPreferences.Editor editor = sharedPreferences.edit();
     editor.putInt(SAVED_PERCENTAGE_KEY, pathPercentage);
     editor.commit();

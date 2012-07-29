@@ -1,0 +1,65 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/tvBrightness"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="21dp"
+        android:layout_marginTop="91dp"
+        android:text="@string/brightness" />
+
+    <SeekBar
+        android:id="@+id/sbBrightness"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/tvBrightness"
+        android:layout_marginLeft="58dp"
+        android:layout_toLeftOf="@+id/tvBrightnessValue"
+        android:layout_toRightOf="@+id/tvBrightness"
+        android:max="100" />
+
+    <TextView
+        android:id="@+id/tvBrightnessValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tvBrightness"
+        android:layout_alignBottom="@+id/tvBrightness"
+        android:layout_alignParentRight="true"
+        android:gravity="right"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/tvPeltierPower"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/tvBrightness"
+        android:layout_below="@+id/tvBrightness"
+        android:layout_marginTop="140dp"
+        android:text="@string/peltier_power" />
+
+    <SeekBar
+        android:id="@+id/sbPeltierPower"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/tvPeltierPower"
+        android:layout_alignLeft="@+id/sbBrightness"
+        android:layout_toLeftOf="@+id/tvPeltierPowerValue"
+        android:layout_toRightOf="@+id/tvPeltierPower"
+        android:max="100" />
+
+    <TextView
+        android:id="@+id/tvPeltierPowerValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tvPeltierPower"
+        android:layout_alignBottom="@+id/tvPeltierPower"
+        android:layout_alignParentRight="true"
+        android:gravity="right"
+        android:text="TextView" />
+
+</RelativeLayout>

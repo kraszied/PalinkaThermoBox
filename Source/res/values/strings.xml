@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">PalinCAR</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_main">PalinCAR</string>
@@ -11,5 +12,10 @@
     <string name="bt_connection_interrupted">Bluetooth connection interrupted.</string>
     <string name="bt_connected">connected</string>
     <string name="bt_disconnected">disconnected</string>
-    <string name="bt_connecting">connecting...</string>    
+    <string name="bt_connecting">connecting...</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_options">Options</string>
+    <string name="brightness">Brightness</string>
+    <string name="peltier_power">Peltier power</string>
+
 </resources>
