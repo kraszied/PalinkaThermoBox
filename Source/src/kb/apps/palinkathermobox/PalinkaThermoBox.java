@@ -152,17 +152,19 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
   @Override
   protected void onDestroy() {
     super.onDestroy();
-    if (service != null) {
-      service.stop();
-      service = null;
+    if (adapter != null) {
+      if (service != null) {
+        service.stop();
+        service = null;
+      }
+      if (!adapterPrevEnabled && adapter.isEnabled()) {
+        // stop the bluetooth device
+        Toast.makeText(this, R.string.bt_will_be_disabled, Toast.LENGTH_LONG)
+            .show();
+        adapter.disable();
+      }
+      btAdapterTurnOnIntent = null;
     }
-    if (!adapterPrevEnabled && adapter.isEnabled()) {
-      // stop the bluetooth device
-      Toast.makeText(this, R.string.bt_will_be_disabled, Toast.LENGTH_LONG)
-          .show();
-      adapter.disable();
-    }
-    btAdapterTurnOnIntent = null;
   }
 
   /**
