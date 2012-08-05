@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.view.Menu;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -51,12 +50,6 @@ public class Options extends Activity implements OnSeekBarChangeListener {
 
     brightness.setOnSeekBarChangeListener(this);
     peltierPower.setOnSeekBarChangeListener(this);
-}
-
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    getMenuInflater().inflate(R.menu.activity_options, menu);
-    return true;
   }
   
   @Override

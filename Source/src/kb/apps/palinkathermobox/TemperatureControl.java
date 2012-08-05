@@ -168,6 +168,8 @@ public class TemperatureControl extends View {
 		
 		return super.onTouchEvent(event);
 	}
+	
+	
 	public double getTemperatureLevel()
 	{
 		int range = MAXIMUM_TEMPERATURE - MINIMUM_TEMPERATURE;

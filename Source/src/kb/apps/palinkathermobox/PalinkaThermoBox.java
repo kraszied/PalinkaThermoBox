@@ -9,11 +9,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.app.Activity;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -103,9 +101,6 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
     temperature = (TemperatureControl) findViewById(R.id.tempControl);
     temperature.setEventHandler(this);
 
-    // register for context menu
-    registerForContextMenu(temperature);
-
     // register receiver for options activity changes
     registerReceiver(optionsValueChanged, new IntentFilter(
         Options.ACTION_VALUE_CHANGED));
@@ -114,18 +109,20 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
   @Override
   protected void onStart() {
     super.onStart();
-    if (service == null) {
-      adapterPrevEnabled = adapter.isEnabled();
-      if (adapterPrevEnabled) {
-        createService();
-        waitBeforeConnect = false;
-      } else {
-        // try to enable the bluetooth adapter
-        if (btAdapterTurnOnIntent == null) {
-          btAdapterTurnOnIntent = new Intent(
-              BluetoothAdapter.ACTION_REQUEST_ENABLE);
-          startActivityForResult(btAdapterTurnOnIntent, REQUEST_ENABLE_BT);
-          waitBeforeConnect = true;
+    if (adapter != null) {
+      if (service == null) {
+        adapterPrevEnabled = adapter.isEnabled();
+        if (adapterPrevEnabled) {
+          createService();
+          waitBeforeConnect = false;
+        } else {
+          // try to enable the bluetooth adapter
+          if (btAdapterTurnOnIntent == null) {
+            btAdapterTurnOnIntent = new Intent(
+                BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(btAdapterTurnOnIntent, REQUEST_ENABLE_BT);
+            waitBeforeConnect = true;
+          }
         }
       }
     }
@@ -152,11 +149,11 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
   @Override
   protected void onDestroy() {
     super.onDestroy();
+    if (service != null) {
+      service.stop();
+      service = null;
+    }
     if (adapter != null) {
-      if (service != null) {
-        service.stop();
-        service = null;
-      }
       if (!adapterPrevEnabled && adapter.isEnabled()) {
         // stop the bluetooth device
         Toast.makeText(this, R.string.bt_will_be_disabled, Toast.LENGTH_LONG)
@@ -250,27 +247,25 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
     }
     }
   }
-
-  @Override
-  public void onCreateContextMenu(ContextMenu menu, View v,
-      ContextMenuInfo menuInfo) {
-    super.onCreateContextMenu(menu, v, menuInfo);
-    MenuInflater inflater = getMenuInflater();
-    inflater.inflate(R.menu.context_menu, menu);
-
-  }
-
-  @Override
-  public boolean onContextItemSelected(MenuItem item) {
-    switch (item.getItemId()) {
-    case R.id.options:
-      Intent intent = new Intent(this, Options.class);
-      startActivity(intent);
-      return true;
-    default:
-      return super.onContextItemSelected(item);
-    }
-  }
+   
+   @Override
+   public boolean onCreateOptionsMenu(Menu menu) {
+     MenuInflater inflater = getMenuInflater();
+     inflater.inflate(R.menu.context_menu, menu);
+     return true;
+   }
+   
+   @Override
+   public boolean onOptionsItemSelected(MenuItem item) {
+     switch (item.getItemId()) {
+     case R.id.options:
+       Intent intent = new Intent(this, Options.class);
+       startActivity(intent);
+       return true;
+     default:
+       return super.onContextItemSelected(item);
+     }
+   }
 
   @Override
   public void onCommand(String command, String value) {
