@@ -61,7 +61,6 @@ public final class R {
         public static final int title_activity_options=0x7f05000d;
     }
     public static final class style {
-        public static final int AppTheme=0x7f060002;
         public static final int CustomTheme=0x7f060001;
         public static final int CustomWindowTitleBackground=0x7f060000;
     }

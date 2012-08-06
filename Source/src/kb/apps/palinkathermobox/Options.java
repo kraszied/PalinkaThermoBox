@@ -58,13 +58,13 @@ public class Options extends Activity implements OnSeekBarChangeListener {
     savePrefrences(this);
   }
   
-  @Override
+
   public void onStartTrackingTouch(SeekBar arg0) {
     // TODO Auto-generated method stub
     
   }
 
-  @Override
+
   public void onStopTrackingTouch(SeekBar seekBar) {    
     Intent intent = new Intent();
     intent.setAction(ACTION_VALUE_CHANGED);
@@ -73,7 +73,7 @@ public class Options extends Activity implements OnSeekBarChangeListener {
     sendBroadcast(intent);
   }
   
-  @Override
+
   public void onProgressChanged(SeekBar seekBar, int progress,
       boolean fromUser)
   {

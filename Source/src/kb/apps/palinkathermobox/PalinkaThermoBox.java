@@ -267,7 +267,7 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
      }
    }
 
-  @Override
+
   public void onCommand(String command, String value) {
     Message msg = handler.obtainMessage(COMMAND_RECEIVED_MSG);
     Bundle bundle = new Bundle();
@@ -277,7 +277,6 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
     handler.sendMessage(msg);
   }
 
-  @Override
   public void onErrorMessage(String errorMsg) {
     Message msg = handler.obtainMessage(ERROR_MSG_RECEIVED_MSG);
     Bundle bundle = new Bundle();
@@ -286,7 +285,7 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
     handler.sendMessage(msg);
   }
 
-  @Override
+
   public void onStatusChanged(int status) {
     Message msg = handler.obtainMessage(BT_SERVICE_STATUS_CHANGED);
     Bundle bundle = new Bundle();
@@ -295,7 +294,7 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
     handler.sendMessage(msg);
   }
 
-  @Override
+
   public void onTemperatureChanged(double value) {
     String cmd = PC_OUT_COMMAND_T + String.format("%d", (int) (value * 10))
         + PC_COMMAND_POSTFIX;

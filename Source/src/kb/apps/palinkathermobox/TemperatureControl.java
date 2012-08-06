@@ -12,7 +12,7 @@ import android.view.View;
 public class TemperatureControl extends View {
 
 	public final static int METER_RADIUS = 15; 
-	public final static int METER_SLACK = 10;
+	public final static int METER_SLACK = 15;
 	
 	public final static int MINIMUM_TEMPERATURE = 8;
 	public final static int MAXIMUM_TEMPERATURE = 24; //TODO : Confirm values
@@ -63,11 +63,16 @@ public class TemperatureControl extends View {
 		super.onDraw(canvas);
 		paint.setAntiAlias(true);
 		
-		
+		//Support for small screens, re-scaling
+		if(this.getWidth() < 400)
+		{
+			canvas.scale(0.75f,0.75f); 
+		}
 		canvas.drawARGB(255, 20, 20, 20);
 		
 		//Main, big yellow circle.
 		paint.setARGB(255, 240, 230, 20);
+		
 		canvas.drawCircle(this.getWidth()/2, this.getHeight()/2, 160,paint);
 		
 		//inner black circle
@@ -127,6 +132,7 @@ public class TemperatureControl extends View {
 			meterTemperature += 2;
 			textDegrees += 22.5;
 		}
+		
 		
 	}
 	

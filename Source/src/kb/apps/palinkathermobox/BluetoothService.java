@@ -88,7 +88,7 @@ public class BluetoothService implements ServiceEvents {
     }
   }
 
-  @Override
+
   public void onDataReceived(byte[] data) {    
     StringBuilder cmd = new StringBuilder();
     StringBuilder value = new StringBuilder();   
@@ -106,7 +106,7 @@ public class BluetoothService implements ServiceEvents {
     }
   }
 
-  @Override
+
   public void onErrorMessage(String errorMsg) {
     if (event != null) {
       event.onErrorMessage(errorMsg);
@@ -146,7 +146,6 @@ public class BluetoothService implements ServiceEvents {
     }
   }
 
-  @Override
   public void onStatusChanged(int status) {
     setStatus(status);
   }
