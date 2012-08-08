@@ -30,7 +30,6 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
   private BluetoothDevice device = null;    /** bluetooth device object (connected to) */
   private BluetoothService service = null;  /** bluetooth service object */
   private boolean adapterPrevEnabled = false;  /** contains the previus status of the bluetooth adapter */
-  private boolean waitBeforeConnect = false;  /** application should wait before connect or not */
   private Intent btAdapterTurnOnIntent = null;  /** save adapter turn on request prevent uninteded calling sub activity */
   private TextView logTextRight;  /** custom title rigth text object */
   private TextView logTextLeft;  /** custom title left text object */
@@ -65,10 +64,10 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
   // palincar device constants
   private static final UUID PALINCAR_SERVICE = UUID
       .fromString("00001101-0000-1000-8000-00805F9B34FB");
-  private static final String PALINCAR_MAC_ADDRESS = "00:1F:E1:F2:95:1F";
+  private static final String PALINCAR_MAC_ADDRESS = "00:1F:E1:F2:95:1F";  // simulator
 
-  // private static final String PALINCAR_MAC_ADDRESS = "00:07:80:9D:36:46";
-  // private static final String PALINCAR_MAC_ADDRESS = "00:07:80:56:8A:33";
+  //private static final String PALINCAR_MAC_ADDRESS = "00:07:80:9D:36:46";  // palinCar I
+  //private static final String PALINCAR_MAC_ADDRESS = "00:07:80:56:8A:33";  // palinCar II
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -104,46 +103,18 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
     // register receiver for options activity changes
     registerReceiver(optionsValueChanged, new IntentFilter(
         Options.ACTION_VALUE_CHANGED));
-  }
 
-  @Override
-  protected void onStart() {
-    super.onStart();
-    if (adapter != null) {
-      if (service == null) {
-        adapterPrevEnabled = adapter.isEnabled();
-        if (adapterPrevEnabled) {
-          createService();
-          waitBeforeConnect = false;
-        } else {
-          // try to enable the bluetooth adapter
-          if (btAdapterTurnOnIntent == null) {
-            btAdapterTurnOnIntent = new Intent(
-                BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(btAdapterTurnOnIntent, REQUEST_ENABLE_BT);
-            waitBeforeConnect = true;
-          }
-        }
+    adapterPrevEnabled = adapter.isEnabled();
+    if (adapterPrevEnabled) {
+      createService(false);
+    } else {
+      // try to enable the bluetooth adapter
+      if (btAdapterTurnOnIntent == null) {
+        btAdapterTurnOnIntent = new Intent(
+            BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        startActivityForResult(btAdapterTurnOnIntent, REQUEST_ENABLE_BT);
       }
     }
-  }
-
-  @Override
-  protected void onResume() {
-    super.onResume();
-    if (service != null) {
-      service.start(waitBeforeConnect);
-    }
-  }
-
-  @Override
-  protected void onPause() {
-    super.onPause();
-  }
-
-  @Override
-  protected void onStop() {
-    super.onStop();
   }
 
   @Override
@@ -180,7 +151,6 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
         Toast.makeText(context, R.string.bt_connection_interrupted,
             Toast.LENGTH_LONG).show();
         logTextRight.setText(R.string.bt_disconnected);
-        waitBeforeConnect = true;
         // finish();
         break;
       }
@@ -189,10 +159,7 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
         break;
       }
       case BluetoothAdapter.STATE_ON: {
-        if (service != null) {
-          service.start(waitBeforeConnect);
-          waitBeforeConnect = false;
-        }
+        createService(true);
         break;
       }
       }
@@ -241,7 +208,7 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
         setResult(RESULT_CANCELED);
         finish();
       } else {
-        createService();
+        //createService();
       }
       break;
     }
@@ -307,10 +274,11 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
    * create the service object returns true if the creation was successful
    * otherwise false
    * */
-  private void createService() {
+  private void createService(boolean wait) {
     try {
       device = adapter.getRemoteDevice(PALINCAR_MAC_ADDRESS);
       service = new BluetoothService(adapter, device, PALINCAR_SERVICE, this);
+      service.start(wait);
     } catch (IllegalArgumentException e) {
       device = null;
       service = null;
