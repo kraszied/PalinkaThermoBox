@@ -22,6 +22,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 
 public class PalinkaThermoBox extends Activity implements ApplicationEvents {
 
@@ -115,6 +116,12 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
         startActivityForResult(btAdapterTurnOnIntent, REQUEST_ENABLE_BT);
       }
     }
+  }
+  
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    // TODO Auto-generated method stub
+    //super.onConfigurationChanged(newConfig);
   }
 
   @Override
