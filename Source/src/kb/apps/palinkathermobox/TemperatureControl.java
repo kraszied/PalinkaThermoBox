@@ -70,7 +70,7 @@ public class TemperatureControl extends View {
 		this.width = this.getWidth();
 		
 		//Support for small screens, re-scaling
-		if(this.width > 400 && referenceSize == 160 )
+		if(this.width < 400 && referenceSize == 160 )
 		{
 			referenceSize *= 0.7;
 		}
