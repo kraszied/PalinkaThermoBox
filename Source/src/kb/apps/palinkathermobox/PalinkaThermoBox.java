@@ -214,8 +214,6 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
         Toast.makeText(this, R.string.bt_not_enabled, Toast.LENGTH_LONG).show();
         setResult(RESULT_CANCELED);
         finish();
-      } else {
-        //createService();
       }
       break;
     }
@@ -225,7 +223,7 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
    @Override
    public boolean onCreateOptionsMenu(Menu menu) {
      MenuInflater inflater = getMenuInflater();
-     inflater.inflate(R.menu.context_menu, menu);
+     inflater.inflate(R.menu.options_menu, menu);
      return true;
    }
    
@@ -233,9 +231,16 @@ public class PalinkaThermoBox extends Activity implements ApplicationEvents {
    public boolean onOptionsItemSelected(MenuItem item) {
      switch (item.getItemId()) {
      case R.id.options:
+     {
        Intent intent = new Intent(this, Options.class);
        startActivity(intent);
        return true;
+     }
+     case R.id.exit:
+     {
+       finish();
+       return true;
+     }
      default:
        return super.onContextItemSelected(item);
      }

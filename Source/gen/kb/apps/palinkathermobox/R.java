@@ -21,6 +21,7 @@ public final class R {
     }
     public static final class id {
         public static final int RelativeLayout01=0x7f080006;
+        public static final int exit=0x7f08000c;
         public static final int menu_settings=0x7f08000a;
         public static final int options=0x7f08000b;
         public static final int sbBrightness=0x7f080001;
@@ -40,7 +41,7 @@ public final class R {
     }
     public static final class menu {
         public static final int activity_options=0x7f070000;
-        public static final int context_menu=0x7f070001;
+        public static final int options_menu=0x7f070001;
     }
     public static final class string {
         public static final int app_name=0x7f050000;

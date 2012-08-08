@@ -3,4 +3,5 @@
         android:id="@+id/options" 
         android:title="Options">
     </item>
+    <item android:id="@+id/exit" android:title="Exit"></item>
 </menu>
