@@ -5,9 +5,13 @@ import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
+import android.os.Build;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
+import android.annotation.TargetApi;
+import android.app.Activity;
 
 public class TemperatureControl extends View {
 
@@ -34,6 +38,7 @@ public class TemperatureControl extends View {
 	private boolean isMeterPressed;
 	private ApplicationEvents event;
 	private Context context;
+	private float density;
 	
   private volatile double temperatureLevel = -99;
 	
@@ -45,7 +50,9 @@ public class TemperatureControl extends View {
 		meterXPosition = 0;
 		meterYPosition = 0;
 		isMeterPressed = false;
-		referenceSize = 160;
+		density = getResources().getDisplayMetrics().density;
+		referenceSize = (int) (130 * density);
+
 		
     // load the stored temperature data
 		this.context = context;
@@ -60,10 +67,14 @@ public class TemperatureControl extends View {
 	  this.event = event;
 	}
 	
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	public void onDraw(Canvas canvas)
 	{
 		super.onDraw(canvas);
 		paint.setAntiAlias(true);
+		
+		DisplayMetrics metrics = new DisplayMetrics();
+		((Activity) getContext()).getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
 		
 		//Pre-calculate sizes
 		this.height = this.getHeight();
@@ -124,7 +135,7 @@ public class TemperatureControl extends View {
 		//Meter values drawing
 		// Values are outside at 1.15625 of reference isze
 		paint.setARGB(255, 240, 230, 20);
-		paint.setTextSize(18);
+		paint.setTextSize((int)(15 * density/2));
 		int meterTemperature = MINIMUM_TEMPERATURE;
 		float textDegrees = 0;
 		String currenttemp;
