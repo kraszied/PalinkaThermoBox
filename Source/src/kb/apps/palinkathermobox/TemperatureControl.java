@@ -10,14 +10,14 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
-import android.annotation.TargetApi;
+//import android.annotation.TargetApi;
 import android.app.Activity;
 
 public class TemperatureControl extends View {
 
 
-	public final static int MINIMUM_TEMPERATURE = 8;
-	public final static int MAXIMUM_TEMPERATURE = 24; //TODO : Confirm values
+	public final static int MINIMUM_TEMPERATURE = 12;
+	public final static int MAXIMUM_TEMPERATURE = 22; 
 	public final static double PERCENTAGE_TO_ANGLE =  1.8;
 	
 	public static final String PREFERENCE_NAME = "PALINCAR_REFERENCE";    /** prefernece name */
@@ -67,7 +67,7 @@ public class TemperatureControl extends View {
 	  this.event = event;
 	}
 	
-	@TargetApi(Build.VERSION_CODES.FROYO)
+	//@TargetApi(Build.VERSION_CODES.FROYO)
 	public void onDraw(Canvas canvas)
 	{
 		super.onDraw(canvas);
@@ -144,11 +144,11 @@ public class TemperatureControl extends View {
 			currenttemp = String.valueOf(meterTemperature);
 			currenttemp += "°C";
 			canvas.drawText(currenttemp, 
-							(float) (this.width/2 + (referenceSize * 1.15625) * Math.cos(textDegrees * Math.PI/180)), 
-							(float) ( (this.height/2 + 10) + (referenceSize * 1.15625) * Math.sin(textDegrees * Math.PI/180)), 
+							(float) (this.width/2 + (referenceSize * 1.2) * Math.cos(textDegrees * Math.PI/180)), 
+							(float) ( (this.height/2 + 10) + (referenceSize * 1.2) * Math.sin(textDegrees * Math.PI/180)), 
 							paint);
-			meterTemperature += 2;
-			textDegrees += 22.5;
+			meterTemperature += 1;
+			textDegrees += 18;
 		}
 		
 		
