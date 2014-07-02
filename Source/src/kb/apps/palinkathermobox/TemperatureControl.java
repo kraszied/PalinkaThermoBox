@@ -67,14 +67,14 @@ public class TemperatureControl extends View {
 	  this.event = event;
 	}
 	
-	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+	@TargetApi(Build.VERSION_CODES.FROYO)
 	public void onDraw(Canvas canvas)
 	{
 		super.onDraw(canvas);
 		paint.setAntiAlias(true);
 		
 		DisplayMetrics metrics = new DisplayMetrics();
-		((Activity) getContext()).getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
+		((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(metrics);
 		
 		//Pre-calculate sizes
 		this.height = this.getHeight();
